@@ -45,6 +45,55 @@ def post(post_id):
 def about():
     return render_template('about.html')
 
+
+@app.route('/healthz')
+def healthcheck():
+    response = app.response_class(
+            response=json.dumps({"result":"OK - healthy"}),
+            status=200,
+            mimetype='application/json'
+    )
+
+    ## log line
+    app.logger.info('Status request successfull')
+    return response
+
+
+def get_post_count():
+    connection = get_db_connection()
+    posts = connection.execute('SELECT * FROM posts').fetchall()
+    post_count = len(posts)
+    connection.close()
+    return post_count
+
+
+def get_conn_cnt():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    table_name = 'posts'
+    query = f"SELECT COUNT(*) FROM {table_name}"
+    cursor.execute(query)
+    result = cursor.fetchone()
+    row_count = result[0]
+    cursor.close()
+    conn.close()
+    return row_count
+
+
+@app.route('/metrics')
+def metrics():
+    response = app.response_class(
+            response=json.dumps({"db_connection_count": get_conn_cnt(), "post_count": get_post_count()}),
+            status=200,
+            mimetype='application/json'
+    )
+
+    ## log line
+    app.logger.info('Metrics request successfull')
+    return response
+
+
 # Define the post creation functionality 
 @app.route('/create', methods=('GET', 'POST'))
 def create():
