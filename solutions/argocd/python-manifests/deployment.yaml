@@ -21,7 +21,7 @@ spec:
         app: python-helloworld
     spec:
       containers:
-      - image: pixelpotato/python-helloworld:v1.0.0 
+      - image: cissoidx/python-helloworld:sha-9d3d5c7 
         imagePullPolicy: IfNotPresent
         name: python-helloworld
         resources:
