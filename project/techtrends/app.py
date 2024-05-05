@@ -10,10 +10,15 @@ conn_cnt = 0
 
 # Function to get a database connection.
 # This function connects to database with the name `database.db`
-def get_db_connection():
+def _get_db_connection():
     global conn_cnt
     conn_cnt += 1
-    connection = sqlite3.connect('database.db')
+    conn = sqlite3.connect('database.db')
+    return conn
+
+
+def get_db_connection():
+    connection = _get_db_connection()
     connection.row_factory = sqlite3.Row
     return connection
 
@@ -29,7 +34,7 @@ def get_post(post_id):
 
 # Function to get the posts count
 def get_posts_cnt():
-    conn = sqlite3.connect('database.db')
+    conn = _get_db_connection()
     posts_cnt = conn.execute('SELECT count(*) FROM posts').fetchone()
     conn.close()
     return posts_cnt
